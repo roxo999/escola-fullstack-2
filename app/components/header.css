@@ -1,0 +1,73 @@
+.school-header {
+    width: 100%;
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 45px;
+    background: #180608;
+    border-bottom: 1px solid #551016;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.school-brand {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.school-logo-img {
+    width: 55px;
+    height: 55px;
+    object-fit: contain;
+}
+
+.school-logo {
+    margin: 0;
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.school-subtitle {
+    display: block;
+    margin-top: 4px;
+    color: #ef4444;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+}
+
+.school-nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.school-nav a {
+    padding: 10px 16px;
+    border-radius: 7px;
+    color: #d1d5db;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: 0.2s;
+}
+
+.school-nav a:hover {
+    background: #7f1d1d;
+    color: #ffffff;
+}
+
+@media (max-width: 700px) {
+    .school-header {
+        padding: 15px 20px;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .school-nav {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
