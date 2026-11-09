@@ -1,0 +1,107 @@
+
+.container {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background: radial-gradient(
+        circle at top right,
+        #4a0b0b 0%,
+        #250709 45%,
+        #0d0203 100%
+    );
+    box-sizing: border-box;
+}
+
+.card {
+    width: 100%;
+    max-width: 420px;
+    padding: 40px;
+    background: linear-gradient(145deg, #2d090c, #160405);
+    border: 1px solid rgba(220, 38, 38, 0.25);
+    border-radius: 18px;
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.4);
+    box-sizing: border-box;
+}
+
+.titulo {
+    color: #ffffff;
+    font-size: 30px;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.subtitulo {
+    color: #c9a5a5;
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 14px;
+}
+
+.grupo {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+.grupo label {
+    color: #ffffff;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.grupo input {
+    padding: 13px;
+    border-radius: 8px;
+    border: 1px solid #633034;
+    background: #1b0709;
+    color: white;
+    font-size: 15px;
+    outline: none;
+    transition: 0.3s;
+}
+
+.grupo input:focus {
+    border-color: #dc2626;
+    box-shadow: 0 0 5px rgba(220, 38, 38, 0.4);
+}
+
+.grupo input::placeholder {
+    color: #927777;
+}
+
+.botao {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(90deg, #8b111b, #c21e2b);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.botao:hover {
+    background: linear-gradient(90deg, #a91622, #e02b39);
+    transform: translateY(-2px);
+}
+
+.link {
+    text-align: center;
+    margin-top: 25px;
+    color: #c9a5a5;
+    font-size: 14px;
+}
+
+.link a {
+    color: #ed414d;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.link a:hover {
+    text-decoration: underline;
+}

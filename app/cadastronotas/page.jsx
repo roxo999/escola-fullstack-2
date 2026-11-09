@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Header from "../components/header";
 import { getAlunos, salvarNota } from "../utils/storage";
+import { redirect } from "next/navigation";
 
 const styles = `
     .home {
@@ -240,81 +241,47 @@ const styles = `
 `;
 
 export default function CadastroNotas() {
-    const router = useRouter();
-
-    const [alunos, setAlunos] = useState([]);
-    const [alunoSelecionado, setAlunoSelecionado] = useState("");
-    const [nomePersonalizado, setNomePersonalizado] = useState("");
-    const [serie, setSerie] = useState("");
-
-    const [trabalho1, setTrabalho1] = useState("");
-    const [trabalho2, setTrabalho2] = useState("");
-    const [nota1, setNota1] = useState("");
-    const [nota2, setNota2] = useState("");
-    const [nota3, setNota3] = useState("");
-
-    const [mensagem, setMensagem] = useState("");
+    const [id_aluno, setIdAluno] = useState('');
+    const [t1, setT1] = useState('');
+    const [t2, setT2] = useState('');
+    const [n1, setN1] = useState('');
+    const [n2, setN2] = useState('');
+    const [n3, setN3] = useState('');
+    const [alunos, setAlunos] = useState([])
 
     useEffect(() => {
-        const listaAlunos = getAlunos();
-        setAlunos(listaAlunos);
+        buscarAlunos();
     }, []);
 
-    const handleSelectAluno = (e) => {
-        const valor = e.target.value;
-        setAlunoSelecionado(valor);
-        if (valor && valor !== "outro") {
-            const encontrado = alunos.find(a => a.nome === valor);
-            if (encontrado) {
-                setSerie(encontrado.serie || "");
-            }
+    async function buscarAlunos() {
+        const resposta = await fetch("/api/alunos");
+        const dados = await resposta.json();
+        setAlunos(dados);
+    }
+
+
+    async function cadastraNotas(event) {
+        event.preventDefault();
+        const resposta = await fetch("/api/notas", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                id_aluno,
+                t1,
+                t2,
+                n1,
+                n2,
+                n3
+            })
+        })
+        const dados = await resposta.json();
+        alert(dados.mensagem || dados.erro)
+        if (resposta.ok) {
+            redirect("/listnotas")
         }
-    };
-
-    const t1 = parseFloat(trabalho1) || 0;
-    const t2 = parseFloat(trabalho2) || 0;
-    const n1 = parseFloat(nota1) || 0;
-    const n2 = parseFloat(nota2) || 0;
-    const n3 = parseFloat(nota3) || 0;
-
-    const temNotas = trabalho1 !== "" || trabalho2 !== "" || nota1 !== "" || nota2 !== "" || nota3 !== "";
-    const mediaCalculada = temNotas ? ((t1 + t2 + n1 + n2 + n3) / 5).toFixed(1) : "0,0";
-
-    const getSituacao = (media) => {
-        const num = parseFloat(media);
-        if (num >= 9.0) return "Destaque";
-        if (num >= 6.0) return "Aprovado";
-        return "Recuperação";
-    };
-
-    const cadastrarNota = (e) => {
-        e.preventDefault();
-
-        const nomeFinal = alunoSelecionado === "outro" || !alunoSelecionado ? nomePersonalizado : alunoSelecionado;
-
-        if (!nomeFinal) {
-            alert("Por favor, informe ou selecione o nome do aluno.");
-            return;
-        }
-
-        const novaNotaObj = {
-            nome: nomeFinal,
-            serie: serie || "3º Ano A",
-            trabalho1: t1,
-            trabalho2: t2,
-            nota1: n1,
-            nota2: n2,
-            nota3: n3,
-            situacao: getSituacao(mediaCalculada)
-        };
-
-        salvarNota(novaNotaObj);
-        setMensagem("Notas salvas com sucesso!");
-
-        setTimeout(() => {
-            router.push("/notas");
-        }, 1200);
-    };
+    }
 
     return (
         <>
@@ -339,58 +306,30 @@ export default function CadastroNotas() {
                         </p>
                     </div>
 
-                    {mensagem && (
-                        <div className="alerta-sucesso">
-                            ✓ {mensagem}
-                        </div>
-                    )}
-
-                    <form onSubmit={cadastrarNota}>
+                   
+                    <form onSubmit={cadastraNotas}>
 
                         <div className="secao-titulo">Aluno</div>
                         
                         <div className="input-group">
                             <label className="input-label">Selecionar Aluno</label>
-                            <select 
-                                value={alunoSelecionado} 
-                                onChange={handleSelectAluno}
-                                className="form-input"
-                            >
-                                <option value="">-- Selecione um aluno cadastrado --</option>
-                                {alunos.map((a) => (
-                                    <option key={a.id} value={a.nome}>
-                                        {a.nome} ({a.serie || '3º Ano'})
-                                    </option>
-                                ))}
-                                <option value="outro">+ Digitar outro aluno...</option>
-                            </select>
-                        </div>
-
-                        {(alunoSelecionado === "outro" || alunos.length === 0) && (
-                            <div className="input-group">
-                                <label className="input-label">Nome Completo</label>
-                                <input
-                                    type="text"
-                                    placeholder="Digite o nome completo do aluno"
-                                    value={nomePersonalizado}
-                                    onChange={(e) => setNomePersonalizado(e.target.value)}
+                            <select
+                                    value={id_aluno}
+                                    onChange={(event) => setIdAluno(event.target.value)}
                                     className="form-input"
                                     required
-                                />
-                            </div>
-                        )}
+                                >
+                                    <option value="">Selecione um aluno</option>
 
-                        <div className="input-group">
-                            <label className="input-label">Série / Turma</label>
-                            <input
-                                type="text"
-                                placeholder="Ex: 3º Ano A"
-                                value={serie}
-                                onChange={(e) => setSerie(e.target.value)}
-                                className="form-input"
-                                required
-                            />
+                                    {alunos.map((aluno) => (
+                                        <option key={aluno.id_aluno} value={aluno.id_aluno}>
+                                            {aluno.nome} - RA {aluno.ra}
+                                        </option>
+                                    ))}
+                                </select>
                         </div>
+
+
 
                         <div className="secao-titulo">Trabalhos Práticos</div>
                         <div className="form-row">
@@ -398,12 +337,9 @@ export default function CadastroNotas() {
                                 <label className="input-label">Trabalho 1</label>
                                 <input
                                     type="number"
-                                    step="0.1"
-                                    min="0"
-                                    max="10"
                                     placeholder="0,0 a 10,0"
-                                    value={trabalho1}
-                                    onChange={(e) => setTrabalho1(e.target.value)}
+                                    value={t1}
+                                    onChange={(e) => setT1(e.target.value)}
                                     className="form-input"
                                     required
                                 />
@@ -413,12 +349,9 @@ export default function CadastroNotas() {
                                 <label className="input-label">Trabalho 2</label>
                                 <input
                                     type="number"
-                                    step="0.1"
-                                    min="0"
-                                    max="10"
                                     placeholder="0,0 a 10,0"
-                                    value={trabalho2}
-                                    onChange={(e) => setTrabalho2(e.target.value)}
+                                    value={t2}
+                                    onChange={(e) => setT2(e.target.value)}
                                     className="form-input"
                                     required
                                 />
@@ -431,12 +364,9 @@ export default function CadastroNotas() {
                                 <label className="input-label">Nota 1</label>
                                 <input
                                     type="number"
-                                    step="0.1"
-                                    min="0"
-                                    max="10"
                                     placeholder="0,0 a 10,0"
-                                    value={nota1}
-                                    onChange={(e) => setNota1(e.target.value)}
+                                    value={n1}
+                                    onChange={(e) => setN1(e.target.value)}
                                     className="form-input"
                                     required
                                 />
@@ -446,12 +376,9 @@ export default function CadastroNotas() {
                                 <label className="input-label">Nota 2</label>
                                 <input
                                     type="number"
-                                    step="0.1"
-                                    min="0"
-                                    max="10"
                                     placeholder="0,0 a 10,0"
-                                    value={nota2}
-                                    onChange={(e) => setNota2(e.target.value)}
+                                    value={n2}
+                                    onChange={(e) => setN2(e.target.value)}
                                     className="form-input"
                                     required
                                 />
@@ -461,30 +388,16 @@ export default function CadastroNotas() {
                                 <label className="input-label">Nota 3</label>
                                 <input
                                     type="number"
-                                    step="0.1"
-                                    min="0"
-                                    max="10"
                                     placeholder="0,0 a 10,0"
-                                    value={nota3}
-                                    onChange={(e) => setNota3(e.target.value)}
+                                    value={n3}
+                                    onChange={(e) => setN3(e.target.value)}
                                     className="form-input"
                                     required
                                 />
                             </div>
                         </div>
 
-                        <div className="preview-card">
-                            <div className="preview-item">
-                                <span className="preview-label">Média Calculada</span>
-                                <span className="preview-valor">{mediaCalculada.toString().replace('.', ',')}</span>
-                            </div>
-                            <div className="preview-item">
-                                <span className="preview-label">Situação Prevista</span>
-                                <span className={`preview-status ${getSituacao(mediaCalculada).toLowerCase()}`}>
-                                    {getSituacao(mediaCalculada)}
-                                </span>
-                            </div>
-                        </div>
+                        
 
                         <button
                             type="submit"

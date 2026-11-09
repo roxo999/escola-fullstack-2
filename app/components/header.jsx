@@ -31,16 +31,12 @@ export default function Header() {
                     Cad. Notas
                 </Link>
 
-                <Link href="/alunos">
+                <Link href="/listaluno">
                     Alunos
                 </Link>
 
-                <Link href="/notas">
+                <Link href="/listnotas">
                     Notas
-                </Link>
-
-                <Link href="/boletins">
-                    Boletins
                 </Link>
 
             </nav>

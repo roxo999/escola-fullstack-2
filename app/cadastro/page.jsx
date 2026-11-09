@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Header from "../components/header";
 import { salvarAluno } from "../utils/storage";
+import { redirect } from "next/navigation";
 
 const styles = `
     .home {
@@ -167,33 +168,54 @@ export default function Cadastro() {
     const [ra, setRa] = useState("");
     const [mensagem, setMensagem] = useState("");
 
-    function cadastrarAluno(e) {
-        e.preventDefault();
+    // function cadastrarAluno(e) {
+    //     e.preventDefault();
 
-        if (!nome || !idade || !serie || !ra) {
-            alert("Por favor, preencha todos os campos.");
-            return;
+    //     if (!nome || !idade || !serie || !ra) {
+    //         alert("Por favor, preencha todos os campos.");
+    //         return;
+    //     }
+
+    //     const novoAluno = {
+    //         nome,
+    //         idade,
+    //         serie,
+    //         ra
+    //     };
+
+    //     salvarAluno(novoAluno);
+
+    //     setMensagem(`Aluno "${nome}" cadastrado com sucesso!`);
+
+    //     setNome("");
+    //     setIdade("");
+    //     setSerie("");
+    //     setRa("");
+
+    //     setTimeout(() => {
+    //         setMensagem("");
+    //     }, 4000);
+    // }
+
+    async function cadastrarAluno(evento){
+        evento.preventDefault();
+        const resposta = await fetch("/api/alunos", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                nome,
+                idade,
+                serie,
+                ra
+            })
+        })
+        const dados = await resposta.json();
+        alert(dados.mensagem || dados.erro);
+        if(resposta.ok){
+            redirect("/listaluno")
         }
-
-        const novoAluno = {
-            nome,
-            idade,
-            serie,
-            ra
-        };
-
-        salvarAluno(novoAluno);
-
-        setMensagem(`Aluno "${nome}" cadastrado com sucesso!`);
-
-        setNome("");
-        setIdade("");
-        setSerie("");
-        setRa("");
-
-        setTimeout(() => {
-            setMensagem("");
-        }, 4000);
     }
 
     return (
